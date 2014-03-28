@@ -30,7 +30,7 @@ public class MainMenu implements Screen{
         stage = new Stage();
         camera = new OrthographicCamera();
         skin = new Skin(Gdx.files.internal("data/uiskin.json"), new TextureAtlas(Gdx.files.internal("data/uiskin.atlas")));
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stage);              //
         constructMenu();
     }
 
