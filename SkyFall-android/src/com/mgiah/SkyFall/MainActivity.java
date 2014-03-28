@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.mgiah.SkyFall.Screens.SkyFall;
 
 public class MainActivity extends AndroidApplication {
     @Override
@@ -12,7 +11,9 @@ public class MainActivity extends AndroidApplication {
         super.onCreate(savedInstanceState);
         
         AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
+        cfg.hideStatusBar = true;
+        //cfg.
         
-        initialize(new SkyFall(), cfg);
+        initialize(new MainGameClass(), cfg);
     }
 }
