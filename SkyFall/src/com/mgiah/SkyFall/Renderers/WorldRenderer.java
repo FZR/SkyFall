@@ -27,14 +27,17 @@ public class WorldRenderer implements Renderer {
 
     @Override
     public void load(AssetManager assetManager) {
-
+        loadParallax(assetManager);
     }
 
     @Override
     public void render(float delta) {
-        spriteBatch.setProjectionMatrix(camera.combined);
+        //spriteBatch.setProjectionMatrix(camera.combined);
 
         spriteBatch.begin();
+        parallaxBackground.render();
+        if(!parallaxBackground.getPositionToStop())
+            parallaxBackground.moveY(-0.1f);
         spriteBatch.end();
     }
 
@@ -44,10 +47,12 @@ public class WorldRenderer implements Renderer {
 
     }
 
-    private void loadParallax(){
+    private void loadParallax(AssetManager assetManager){
         parallaxBackground = new ParallaxBackground(new ParallaxLayer[]{
-                new ParallaxLayer(new TextureRegion(new Texture(Gdx.files.internal(""))), 0, 0.5f),
-                new ParallaxLayer(new TextureRegion(new Texture(Gdx.files.internal(""))), 0, 0.5f)
+                new ParallaxLayer(new TextureRegion[]{
+                        new TextureRegion(assetManager.get("Textures/first.png", Texture.class)),
+                        new TextureRegion(assetManager.get("Textures/second.png", Texture.class))
+                }, 0, 0.1f),
         }, camera, spriteBatch);
     }
 }

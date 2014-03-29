@@ -2,7 +2,9 @@ package com.mgiah.SkyFall.Screens;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -23,9 +25,9 @@ public class MainMenu implements Screen{
     private Stage stage;
     private Skin skin;
     private MainGameClass mainGameClass;
-    private BitmapFont font = new BitmapFont();
     private MainMenu mainMenu = this;
     private TextButton resumeButton;
+    private Preferences preferences = Gdx.app.getPreferences(MainGameClass.preferencesName);
 
     public MainMenu(MainGameClass mainGameClass){
         this.mainGameClass = mainGameClass;
@@ -39,8 +41,7 @@ public class MainMenu implements Screen{
         skin = new Skin(Gdx.files.internal("data/uiskin.json"),
                 new TextureAtlas(Gdx.files.internal("data/uiskin.atlas")));
         Gdx.input.setInputProcessor(stage);
-        font.setColor(Color.BLACK);
-        font.setScale(2);
+
         constructMenu();
     }
 
@@ -54,7 +55,7 @@ public class MainMenu implements Screen{
         batch.begin();
         batch.end();
 
-        if(Gdx.app.getPreferences(MainGameClass.preferencesName).getBoolean("PAUSED")){
+        if(preferences.getBoolean("PAUSED")){
             resumeButton.setVisible(true);
         } else {
             resumeButton.setVisible(false);

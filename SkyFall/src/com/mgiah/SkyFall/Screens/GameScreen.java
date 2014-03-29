@@ -2,8 +2,14 @@ package com.mgiah.SkyFall.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -27,6 +33,12 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
     private WorldController worldController;
     private WorldRenderer worldRenderer;
     private MainMenu mainMenu;
+    private Preferences preferences = Gdx.app.getPreferences(MainGameClass.preferencesName);
+    private AssetManager assetManager = new AssetManager();
+    private SpriteBatch spriteBatch = new SpriteBatch();
+    private BitmapFont font = new BitmapFont();
+
+
 
     private static final int GAME_READY = 0;
     private static final int GAME_RUNNING = 1;
@@ -50,6 +62,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
         world = new World();
         worldController = new WorldController(world);
         worldRenderer = new WorldRenderer(world);
+        assetManager.load("Textures/first.png", Texture.class);
+        assetManager.load("Textures/second.png", Texture.class);
+        font.setColor(Color.BLACK);
+        font.setScale(2);
     }
 
     @Override
@@ -139,20 +155,29 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
     }
 
     private void updatePaused(){
-        Gdx.app.getPreferences(MainGameClass.preferencesName).putBoolean("PAUSED", true);
-        Gdx.app.getPreferences(MainGameClass.preferencesName).flush();
+        preferences.putBoolean("PAUSED", true);
+        preferences.flush();
         mainGameClass.setPreviousScreen(this);
         mainGameClass.setScreen(mainMenu);
     }
 
     private void updateRunning(float delta){
 
+        worldRenderer.render(delta);
+
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
 
     private void updateReady(){
-        state = GAME_RUNNING;
+        if(assetManager.update()){
+            worldRenderer.load(assetManager);
+            state = GAME_RUNNING;
+        } else {
+            spriteBatch.begin();
+            font.draw(spriteBatch, String.valueOf(assetManager.getProgress()), Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+            spriteBatch.end();
+        }
     }
 
     private void updateGameOver(){

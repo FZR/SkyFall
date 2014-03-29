@@ -2,6 +2,7 @@ package com.mgiah.SkyFall.Renderers.Parallax;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
 public class ParallaxBackground {
@@ -9,6 +10,8 @@ public class ParallaxBackground {
     private ParallaxLayer[] layers;
     private Camera camera;
     private SpriteBatch batch;
+    private float posY = 0;
+    private boolean stop = false;
 
     public ParallaxBackground(ParallaxLayer[] pLayers, Camera pCamera,
                               SpriteBatch pBatch) {
@@ -18,13 +21,27 @@ public class ParallaxBackground {
     }
 
     public void render() {
-        batch.begin();
+//        batch.begin();
         for (ParallaxLayer layer : layers) {
-            batch.draw(layer.region, -camera.viewportWidth / 2
-                    - layer.positionX, -camera.viewportHeight / 2
-                    - layer.positionY);
+            for(int i = 0; i < layer.region.length; i++) {
+                if(i == 1){
+                    posY = -camera.viewportHeight / 2 - layer.positionY + layer.secondRegionPosition();
+                    batch.draw(layer.region[i],
+                            -camera.viewportWidth / 2 - layer.positionX,
+                            posY);
+                    if(posY == 0){
+                        stop = true;
+                    } else {
+                        stop = false;
+                    }
+                } else {
+                    batch.draw(layer.region[i],
+                            -camera.viewportWidth / 2 - layer.positionX,
+                            -camera.viewportHeight / 2 - layer.positionY);
+                }
+            }
         }
-        batch.end();
+        //batch.end();
     }
 
     public void moveX(float pDelta) {
@@ -37,5 +54,9 @@ public class ParallaxBackground {
         for (ParallaxLayer layer : layers) {
             layer.moveY(pDelta);
         }
+    }
+
+    public boolean getPositionToStop(){
+        return stop;
     }
 }

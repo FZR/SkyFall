@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="apk" name="SkyFall-android">
+    <output-path>$PROJECT_DIR$/out/artifacts/SkyFall_android</output-path>
+    <properties id="android-properties">
+      <options>
+        <option name="keyStoreUrl" value="file://" />
+        <option name="proGuardCfgFiles">
+          <list>
+            <option value="file://%MODULE_SDK_HOME%/tools/proguard/proguard-android.txt" />
+          </list>
+        </option>
+        <option name="signingMode" value="DEBUG" />
+      </options>
+    </properties>
+    <root id="archive" name="SkyFall-android.apk">
+      <element id="android-final-package" facet="SkyFall-android/android/Android" />
+    </root>
+  </artifact>
+</component>
