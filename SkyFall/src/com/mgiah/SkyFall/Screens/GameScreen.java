@@ -12,21 +12,44 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.mgiah.SkyFall.Controllers.WorldController;
 import com.mgiah.SkyFall.MainGameClass;
 import com.mgiah.SkyFall.Renderers.WorldRenderer;
-import com.mgiah.SkyFall.World;
+import com.mgiah.SkyFall.Models.World;
 
 public class GameScreen implements Screen, GestureDetector.GestureListener {
 
     private MainGameClass mainGameClass;
     private Skin skin;
     private Stage stage;
+    private InputMultiplexer inputMultiplexer;
+    private World world;
+    private WorldController worldController;
+    private WorldRenderer worldRenderer;
+    private MainMenu mainMenu;
 
-    public GameScreen(MainGameClass mainGameClass, Skin skin){
+    private static final int GAME_READY = 0;
+    private static final int GAME_RUNNING = 1;
+    private static final int GAME_PAUSED = 2;
+    private static final int GAME_OVER = 3;
+    //private static final int GAME_ = ;
+    private int state;
+
+    public GameScreen(MainGameClass mainGameClass, Skin skin, MainMenu mainMenu){
         this.mainGameClass = mainGameClass;
+        this.mainMenu = mainMenu;
         this.skin = skin;
+        stage = new Stage();
+
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(new GestureDetector(this));
+        Gdx.input.setInputProcessor(inputMultiplexer);
+        constructMenu();
+
+        world = new World();
+        worldController = new WorldController(world);
+        worldRenderer = new WorldRenderer(world);
     }
 
     @Override
@@ -34,8 +57,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
+        update(delta);
     }
 
     @Override
@@ -45,37 +67,35 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
 
     @Override
     public void show() {
-        stage = new Stage();
-
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(new GestureDetector(this));
-        Gdx.input.setInputProcessor(inputMultiplexer);
-        constructMenu();
-
-        World world = new World();
-        WorldController worldController = new WorldController(world);
-        WorldRenderer worldRenderer = new WorldRenderer(world);
+        if(state == GAME_PAUSED){
+            state = GAME_RUNNING;
+            Gdx.input.setInputProcessor(inputMultiplexer);
+        } else {
+            state = GAME_READY;
+        }
     }
 
     @Override
     public void hide() {
-
+        Gdx.input.setInputProcessor(null);
     }
 
     @Override
     public void pause() {
-
+        if(state == GAME_RUNNING) state = GAME_PAUSED;
     }
 
     @Override
     public void resume() {
-
+        if(state == GAME_PAUSED) state = GAME_RUNNING;
     }
 
     @Override
     public void dispose() {
-
+        Gdx.input.setInputProcessor(null);
+        skin.dispose();
+        stage.dispose();
+        worldRenderer.dispose();
     }
 
     private void constructMenu(){
@@ -85,16 +105,57 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
         table.top().right();
         stage.addActor(table);
 
-        table.add(playButton).size(80, 32).top().right().padRight(15).padTop(15);  //120, 64
+        table.add(playButton).size(25, 25).top().right().padRight(15).padTop(15);  //120, 64
 
         playButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("pressed!");
+                state = GAME_PAUSED;
                 //mainGameClass.setScreen(new GameScreen(mainGameClass, skin));
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
+
+    }
+
+    private void update(float delta){
+        if(delta > 0.1f) delta = 0.1f;
+
+        switch (state){
+            case GAME_READY:
+                updateReady();
+                break;
+            case GAME_RUNNING:
+                updateRunning(delta);
+                break;
+            case GAME_PAUSED:
+                updatePaused();
+                break;
+            case GAME_OVER:
+                updateGameOver();
+                break;
+        }
+    }
+
+    private void updatePaused(){
+        Gdx.app.getPreferences(MainGameClass.preferencesName).putBoolean("PAUSED", true);
+        Gdx.app.getPreferences(MainGameClass.preferencesName).flush();
+        mainGameClass.setPreviousScreen(this);
+        mainGameClass.setScreen(mainMenu);
+    }
+
+    private void updateRunning(float delta){
+
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+        stage.draw();
+    }
+
+    private void updateReady(){
+        state = GAME_RUNNING;
+    }
+
+    private void updateGameOver(){
 
     }
 
@@ -121,7 +182,12 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
 
-        System.out.println("X: " + x + " Y: " + y);
+        if(deltaX < 0){
+            System.out.println("Left");
+        } else if(deltaX > 0){
+            System.out.println("RIGHT");
+        }
+        //System.out.println("X: " + deltaX + " Y: " + deltaY);
         return true;
     }
 

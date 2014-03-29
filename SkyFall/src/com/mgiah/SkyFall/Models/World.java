@@ -1,12 +1,13 @@
-package com.mgiah.SkyFall;
+package com.mgiah.SkyFall.Models;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.mgiah.SkyFall.Characters.MainChar;
 
 public class World {
 
     private MainChar mainChar;
+    private float speed = 100f;
+
 
     public World(){
         createDemo();
@@ -16,4 +17,7 @@ public class World {
         mainChar = new MainChar(new Vector2(Gdx.graphics.getWidth() / 2f, 500f));
     }
 
+    public void update(float delta){
+
+    }
 }

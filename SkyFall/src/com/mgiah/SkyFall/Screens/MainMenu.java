@@ -24,6 +24,8 @@ public class MainMenu implements Screen{
     private Skin skin;
     private MainGameClass mainGameClass;
     private BitmapFont font = new BitmapFont();
+    private MainMenu mainMenu = this;
+    private TextButton resumeButton;
 
     public MainMenu(MainGameClass mainGameClass){
         this.mainGameClass = mainGameClass;
@@ -34,7 +36,8 @@ public class MainMenu implements Screen{
         batch = new SpriteBatch();
         stage = new Stage();
         camera = new OrthographicCamera();
-        skin = new Skin(Gdx.files.internal("data/uiskin.json"), new TextureAtlas(Gdx.files.internal("data/uiskin.atlas")));
+        skin = new Skin(Gdx.files.internal("data/uiskin.json"),
+                new TextureAtlas(Gdx.files.internal("data/uiskin.atlas")));
         Gdx.input.setInputProcessor(stage);
         font.setColor(Color.BLACK);
         font.setScale(2);
@@ -51,6 +54,11 @@ public class MainMenu implements Screen{
         batch.begin();
         batch.end();
 
+        if(Gdx.app.getPreferences(MainGameClass.preferencesName).getBoolean("PAUSED")){
+            resumeButton.setVisible(true);
+        } else {
+            resumeButton.setVisible(false);
+        }
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
@@ -77,6 +85,7 @@ public class MainMenu implements Screen{
 
     private void constructMenu(){
         Table table = new Table();
+        resumeButton =  new TextButton("Resume", skin);
         TextButton playButton = new TextButton("Play", skin);
         TextButton optionsButton = new TextButton("Options", skin);
         TextButton statsButton = new TextButton("Stats", skin);
@@ -84,7 +93,9 @@ public class MainMenu implements Screen{
         table.setFillParent(true);
         stage.addActor(table);
 
-        table.add(playButton).size(80, 32).center().padTop(-15);  //120, 64
+        table.add(resumeButton).size(80, 32).center().padTop(-15);
+        table.row();
+        table.add(playButton).size(80, 32).center().padTop(15);  //120, 64
         table.row();
         table.add(optionsButton).size(80, 32).center().padTop(15);
         table.row();
@@ -96,7 +107,7 @@ public class MainMenu implements Screen{
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 //System.out.println("pressed!");
-                mainGameClass.setScreen(new StoryLineScreen(mainGameClass, skin));
+                mainGameClass.setScreen(new StoryLineScreen(mainGameClass, skin, mainMenu));
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
@@ -105,6 +116,14 @@ public class MainMenu implements Screen{
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Gdx.app.exit();
+                return super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
+        resumeButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                mainGameClass.setScreen(mainGameClass.getPreviousScreen());
                 return super.touchDown(event, x, y, pointer, button);
             }
         });

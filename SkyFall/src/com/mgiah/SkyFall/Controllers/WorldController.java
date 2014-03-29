@@ -1,6 +1,6 @@
 package com.mgiah.SkyFall.Controllers;
 
-import com.mgiah.SkyFall.World;
+import com.mgiah.SkyFall.Models.World;
 
 public class WorldController {
 

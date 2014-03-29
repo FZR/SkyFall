@@ -17,9 +17,11 @@ public class StoryLineScreen implements Screen{
     private MainGameClass mainGameClass;
     private Stage stage;
     private Skin skin;
+    private MainMenu mainMenu;
 
-    public StoryLineScreen(MainGameClass mainGameClass, Skin skin){
+    public StoryLineScreen(MainGameClass mainGameClass, Skin skin, MainMenu mainMenu){
         this.mainGameClass = mainGameClass;
+        this.mainMenu = mainMenu;
         this.skin = skin;
     }
 
@@ -77,7 +79,7 @@ public class StoryLineScreen implements Screen{
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("pressed!");
-                mainGameClass.setScreen(new GameScreen(mainGameClass, skin));
+                mainGameClass.setScreen(new GameScreen(mainGameClass, skin, mainMenu));
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
