@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -64,6 +65,7 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
         worldRenderer = new WorldRenderer(world);
         assetManager.load("Textures/first.png", Texture.class);
         assetManager.load("Textures/second.png", Texture.class);
+        assetManager.load("Textures/clouds/clouds.atlas", TextureAtlas.class);
         font.setColor(Color.BLACK);
         font.setScale(2);
     }

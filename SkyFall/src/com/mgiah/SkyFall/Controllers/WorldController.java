@@ -10,4 +10,11 @@ public class WorldController {
         this.world = world;
     }
 
+    public void setWorldSpeed(float speed){
+        world.setSpeed(speed);
+    }
+
+    public float getWorldSpeed(){
+        return world.getSpeed();
+    }
 }

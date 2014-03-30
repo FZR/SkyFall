@@ -20,4 +20,12 @@ public class World {
     public void update(float delta){
 
     }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
 }
