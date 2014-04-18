@@ -28,7 +28,7 @@ public class WorldRenderer implements Renderer {
     private SpriteBatch spriteBatch;
     private ArrayList<Sprite> cloudSprites = new ArrayList<Sprite>();
     private Array<Cloud> activeClouds = new Array<Cloud>();
-    private float startTime;
+    private long startTime = 0 + System.currentTimeMillis(), endTime;
 
     public WorldRenderer(World world){
         this.world = world;
@@ -50,22 +50,20 @@ public class WorldRenderer implements Renderer {
         for(TextureAtlas.AtlasRegion region : cloudsAtlas.getRegions()){
             cloudSprites.add(new Sprite(region));
         }
-        startTime = System.currentTimeMillis();
-
     }
 
     @Override
     public void render(float delta) {
-        if(activeClouds.size <= 35){
-            Cloud cloud = cloudPool.obtain();//new Cloud(new Vector2(new Random().nextInt(Gdx.graphics.getWidth()) - 100, -(new Random().nextInt(20) * 10)));
-            cloud.init(new Vector2(new Random().nextInt(Gdx.graphics.getWidth()) - 100, -(new Random().nextInt(20) * 10)));
+        if(activeClouds.size <= 25){
+            Cloud cloud = cloudPool.obtain();
+            cloud.init(new Vector2(new Random().nextInt(Gdx.graphics.getWidth()) - 100, -(new Random().nextInt(100) * 15)));
             cloud.setSprite(cloudSprites.get(new Random().nextInt(cloudSprites.size())));
             activeClouds.add(cloud);
         }
         spriteBatch.begin();
         parallaxBackground.render();
         for(int i = 0; i < activeClouds.size; i++){
-            activeClouds.get(i).getVelocity().y = i+25;
+            activeClouds.get(i).getVelocity().y = i+world.getSpeed();
             if(activeClouds.get(i).getPosition().y > Gdx.graphics.getHeight()){
                 cloudPool.free(activeClouds.get(i));
                 activeClouds.removeIndex(i);
@@ -77,6 +75,11 @@ public class WorldRenderer implements Renderer {
         }
         if(!parallaxBackground.getPositionToStop())
             parallaxBackground.moveY(-0.1f);
+        endTime = System.currentTimeMillis();
+        if(((endTime - startTime)/1000f) > 1){
+            world.setSpeed(world.getSpeed()+1);
+            startTime = System.currentTimeMillis();
+        }
         spriteBatch.end();
     }
 

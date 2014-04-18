@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 public class World {
 
     private MainChar mainChar;
-    private float speed = 100f;
+    private float speed = 25f;
 
 
     public World(){
