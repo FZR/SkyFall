@@ -1,11 +1,13 @@
 package com.mgiah.SkyFall.Renderers;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MainCharRenderer implements Renderer {
+    SpriteBatch spriteBatch;
 
-    public MainCharRenderer(){
-
+    public MainCharRenderer(SpriteBatch spriteBatch){
+        this.spriteBatch = spriteBatch;
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.mgiah.SkyFall.Models.Cloud;
+import com.mgiah.SkyFall.Models.MainChar;
 import com.mgiah.SkyFall.Models.World;
 import com.mgiah.SkyFall.Renderers.Parallax.ParallaxBackground;
 import com.mgiah.SkyFall.Renderers.Parallax.ParallaxLayer;
@@ -29,6 +30,8 @@ public class WorldRenderer implements Renderer {
     private ArrayList<Sprite> cloudSprites = new ArrayList<Sprite>();
     private Array<Cloud> activeClouds = new Array<Cloud>();
     private long startTime = 0 + System.currentTimeMillis(), endTime;
+    private MobRenderer mobRenderer = new MobRenderer(spriteBatch);
+    private MainCharRenderer mainCharRenderer = new MainCharRenderer(spriteBatch);
 
     public WorldRenderer(World world){
         this.world = world;
@@ -50,11 +53,13 @@ public class WorldRenderer implements Renderer {
         for(TextureAtlas.AtlasRegion region : cloudsAtlas.getRegions()){
             cloudSprites.add(new Sprite(region));
         }
+        mobRenderer.load(assetManager);
+        mainCharRenderer.load(assetManager);
     }
 
     @Override
     public void render(float delta) {
-        if(activeClouds.size <= 25){
+        if(activeClouds.size <= 15){
             Cloud cloud = cloudPool.obtain();
             cloud.init(new Vector2(new Random().nextInt(Gdx.graphics.getWidth()) - 100, -(new Random().nextInt(100) * 15)));
             cloud.setSprite(cloudSprites.get(new Random().nextInt(cloudSprites.size())));
@@ -69,9 +74,15 @@ public class WorldRenderer implements Renderer {
                 activeClouds.removeIndex(i);
             }
         }
-        for(Cloud cloud : activeClouds){
-            cloud.update(delta);
-            cloud.getSprite().draw(spriteBatch);
+        for(int i = 0; i < activeClouds.size / 2; i++){
+            activeClouds.get(i).update(delta);
+            activeClouds.get(i).getSprite().draw(spriteBatch);
+        }
+        mainCharRenderer.render(delta);
+        mobRenderer.render(delta);
+        for(int i = activeClouds.size / 2; i < activeClouds.size; i++){
+            activeClouds.get(i).update(delta);
+            activeClouds.get(i).getSprite().draw(spriteBatch);
         }
         if(!parallaxBackground.getPositionToStop())
             parallaxBackground.moveY(-0.1f);
@@ -80,6 +91,7 @@ public class WorldRenderer implements Renderer {
             world.setSpeed(world.getSpeed()+1);
             startTime = System.currentTimeMillis();
         }
+
         spriteBatch.end();
     }
 

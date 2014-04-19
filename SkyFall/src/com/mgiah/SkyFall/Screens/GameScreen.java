@@ -19,8 +19,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.mgiah.SkyFall.Controllers.MainCharController;
+import com.mgiah.SkyFall.Controllers.MobController;
 import com.mgiah.SkyFall.Controllers.WorldController;
 import com.mgiah.SkyFall.MainGameClass;
+import com.mgiah.SkyFall.Models.MainChar;
 import com.mgiah.SkyFall.Renderers.WorldRenderer;
 import com.mgiah.SkyFall.Models.World;
 
@@ -38,6 +41,8 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
     private AssetManager assetManager = new AssetManager();
     private SpriteBatch spriteBatch = new SpriteBatch();
     private BitmapFont font = new BitmapFont();
+    private MainCharController mainCharController;
+    private MobController mobController;
 
 
 
@@ -63,6 +68,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
         world = new World();
         worldController = new WorldController(world);
         worldRenderer = new WorldRenderer(world);
+        MainChar mainChar = world.getMainChar();
+        mainCharController = new MainCharController(mainChar);
+        mobController = new MobController(world.getDemon(), world.getAngel(), mainChar, world);
         assetManager.load("Textures/first.png", Texture.class);
         assetManager.load("Textures/second.png", Texture.class);
         assetManager.load("Textures/clouds/clouds.atlas", TextureAtlas.class);
@@ -167,6 +175,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
 
         worldRenderer.render(delta);
 
+        mainCharController.update(delta);
+        mobController.update(delta);
+
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
         stage.draw();
     }
@@ -211,8 +222,10 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
 
         if(deltaX < 0){
             System.out.println("Left");
+            mainCharController.leftPressed();
         } else if(deltaX > 0){
             System.out.println("RIGHT");
+            mainCharController.rightPressed();
         }
         //System.out.println("X: " + deltaX + " Y: " + deltaY);
         return true;
@@ -220,7 +233,9 @@ public class GameScreen implements Screen, GestureDetector.GestureListener {
 
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
-        return false;
+        mainCharController.leftReleased();
+        mainCharController.rightReleased();
+        return true;
     }
 
     @Override

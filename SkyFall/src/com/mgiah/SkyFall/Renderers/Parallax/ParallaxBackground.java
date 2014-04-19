@@ -21,7 +21,6 @@ public class ParallaxBackground {
     }
 
     public void render() {
-//        batch.begin();
         for (ParallaxLayer layer : layers) {
             for(int i = 0; i < layer.region.length; i++) {
                 if(i == 1){
@@ -41,7 +40,6 @@ public class ParallaxBackground {
                 }
             }
         }
-        //batch.end();
     }
 
     public void moveX(float pDelta) {
